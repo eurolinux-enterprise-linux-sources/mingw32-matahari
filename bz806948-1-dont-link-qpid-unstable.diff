@@ -1,0 +1,43 @@
+--- src/include/matahari/agent.h	2012-03-28 17:51:35.558679010 -0400
++++ src/include/matahari/agent.h	2012-03-28 17:51:30.758698660 -0400
+@@ -26,8 +26,6 @@
+ #define __MATAHARI_DAEMON_H
+ 
+ #include <string>
+-#include <qpid/sys/Time.h>
+-#include <qpid/agent/ManagementAgent.h>
+ #include <qpid/management/Manageable.h>
+ #include <qpid/messaging/Connection.h>
+ #include <qmf/AgentEvent.h>
+--- src/lib/mh_agent.cpp	2012-03-28 17:53:30.568207729 -0400
++++ src/lib/mh_agent.cpp	2012-03-28 17:53:06.609305900 -0400
+@@ -35,9 +35,6 @@
+ #include <stdlib.h>
+ #include <cstdlib>
+ 
+-#include <qpid/sys/Time.h>
+-#include <qpid/agent/ManagementAgent.h>
+-#include <qpid/client/ConnectionSettings.h>
+ // #include <qpid/sys/ssl/util.h>
+ #include <qmf/DataAddr.h>
+ #include "matahari/agent.h"
+@@ -50,8 +53,6 @@
+ #endif
+ }
+ 
+-using namespace qpid::management;
+-using namespace qpid::client;
+ using namespace std;
+ 
+ typedef qpid::types::Variant::Map OptionsMap;
+--- src/lib/CMakeLists.txt	2012-03-28 17:52:49.346376639 -0400
++++ src/lib/CMakeLists.txt	2012-03-28 17:52:11.024533669 -0400
+@@ -46,7 +46,7 @@
+     add_library (mcommon_qmf SHARED mh_agent.cpp)
+     set_target_properties(mcommon_qmf PROPERTIES SOVERSION 1.0.0)
+ 
+-    target_link_libraries(mcommon_qmf mcommon ${QPIDCOMMON_LIBRARY} ${QPIDCLIENT_LIBRARY} ${QPIDMESSAGING_LIBRARY} ${QMF2_LIBRARY})
++    target_link_libraries(mcommon_qmf mcommon ${QPIDMESSAGING_LIBRARY} ${QMF2_LIBRARY})
+     if(QPIDTYPES_LIBRARY)
+         target_link_libraries(mcommon_qmf ${QPIDTYPES_LIBRARY})
+     endif(QPIDTYPES_LIBRARY)

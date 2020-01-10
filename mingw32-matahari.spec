@@ -1,7 +1,7 @@
 %global __strip %{_mingw32_strip}
 %global __objdump %{_mingw32_objdump}
 
-%global specversion 11
+%global specversion 13
 %global upstream_version 0.4.4
 
 %define _default_patch_fuzz 2
@@ -35,6 +35,7 @@ Patch11:	bz740091-1-store-sysconfig-keys-in-subdir.diff
 Patch12:	bz741965-1-check-sysconfig-keys-sooner.diff
 Patch13:	bz735426-2-fix-warning.diff
 Patch14:	bz737088-2-dont-use-help2man.diff
+Patch15:	bz806948-1-dont-link-qpid-unstable.diff
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	noarch
@@ -74,6 +75,7 @@ MinGW cross-compiled Windows application.
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p0
 
 %build
 PATH=%{_mingw32_bindir}:$PATH
@@ -100,6 +102,14 @@ test "x%{buildroot}" != "x" && rm -rf %{buildroot}
 %doc AUTHORS COPYING
 
 %changelog
+* Tue May 08 2012 Zane Bitter <zbitter@redhat.com> - 0.4.4-13
+- Rebuild against latest Qpid to remove extraneous dependencies
+  Resolves: rhbz#785192
+
+* Wed Mar 28 2012 Jeff Peeler <jpeeler@redhat.com> - 0.4.4-12
+- Remove dependence on unstable ABI of Qpid
+  Resolves: rhbz#806948
+
 * Mon Nov 07 2011 Adam Stokes <astokes@fedoraproject.org> - 0.4.4-11
 - fix qpid-qmf-devel buildrequire
 - Related: rhbz#751799
