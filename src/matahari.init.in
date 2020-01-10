@@ -1,0 +1,105 @@
+#!/bin/sh
+
+# the following is chkconfig init header
+# matahari-@BASE@@BASE_SUB@: Matahari QMF @BASE@@BASE_SUB@ daemon
+### BEGIN INIT INFO
+# Provides:
+# Required-Start: $local_fs matahari-broker
+# Required-Stop: $local_fs matahari-broker
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Starts and stops the @BASE@@BASE_SUB@ matahari daemon
+# Description: Matahari @BASE@@BASE_SUB@ daemon using the AMQP protocol.
+### END INIT INFO
+
+# chkconfig: - 99 01
+# description: Matahari @BASE@@BASE_SUB@ daemon using the AMQP protocol.
+# processname: matahari-@BASE@@BASE_SUB@d
+# pidfile: @localstatedir@/run/matahari-@BASE@@BASE_SUB@.pid
+#
+
+# Turn off automatic systemd redirects
+#SYSTEMCTL_SKIP_REDIRECT=1
+
+# Source function library.
+. @sysconfdir@/rc.d/init.d/functions
+
+SERVICE=matahari-@BASE@@BASE_SUB@
+PROCESS=matahari-qmf-@BASE@@BASE_SUB@d
+
+RETVAL=0
+
+test -f @sysconfdir@/sysconfig/matahari && . @sysconfdir@/sysconfig/matahari
+
+start() {
+    echo -n $"Starting the $SERVICE daemon: "
+
+    MATAHARI_ARGS="$MATAHARI_@DAEMON_TYPE@_ARGS $@BASE@_@DAEMON_TYPE@_ARGS"
+    if [ -n "$MATAHARI_PORT" ]; then
+	MATAHARI_ARGS="--port $MATAHARI_PORT $MATAHARI_ARGS"
+    fi
+    if [ -n "$MATAHARI_BROKER" ]; then
+	MATAHARI_ARGS="--broker $MATAHARI_BROKER $MATAHARI_ARGS"
+    fi
+
+    # Setup kerberos ticket renewal
+    if [ -n "$KRB_RENEW" ]; then
+        k5start $KRB_RENEW_ARGS $KRB_REALM
+    fi
+
+    daemon $PROCESS $MATAHARI_ARGS --daemon
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch @localstatedir@/lock/subsys/$SERVICE
+}
+
+stop() {
+    echo -n $"Stopping the $SERVICE daemon: "
+
+    killproc $PROCESS
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ]; then
+        rm -f @localstatedir@/lock/subsys/$SERVICE
+        rm -f @localstatedir@/run/$SERVICE.pid
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    echo -n $"Reloading the $SERVICE configuration: "
+
+    killproc $PROCESS -HUP
+    RETVAL=$?
+    echo
+    return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        status $PROCESS >/dev/null || $1
+        ;;
+    stop|restart|reload)
+        $1
+        ;;
+    status)
+        status $PROCESS
+        RETVAL=$?
+        ;;
+    force-reload)
+        reload
+        ;;
+    condrestart|try-restart)
+        [ -f @localstatedir@/lock/subsys/$SERVICE ] && restart || :
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}"
+        exit 1
+        ;;
+esac
+exit $RETVAL

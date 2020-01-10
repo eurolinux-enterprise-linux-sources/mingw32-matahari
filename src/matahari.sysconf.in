@@ -1,0 +1,32 @@
+# Connect to a broker on the named host
+# If this is not defined, agents will attempt to connect to the server specified
+# by the _matahari._tcp SRV record in DNS if that exists, otherwise to localhost
+MATAHARI_BROKER=@MATAHARI_BROKER@
+
+# Connect to a broker on a non-standard port
+#MATAHARI_PORT=@MATAHARI_PORT@
+
+# Other options that all agents should observe
+MATAHARI_AGENT_ARGS="--reconnect=yes"
+
+# Other options that all consoles should observe
+# MATAHARI_CONSOLE_ARGS=...
+
+# Per agent options
+# host_AGENT_ARGS=...
+# network_AGENT_ARGS=...
+
+# Per console options
+# sysconfig_CONSOLE_ARGS=...
+
+# Security
+# Kerberos
+
+# Uncomment to enable auto-renew credentials
+# KRB_RENEW=yes
+
+# Set custom application and arguments for renew process
+# KRB_RENEW_ARGS="-f /etc/krb5.keytab -K 10 -l 10h"
+
+# Kerberos REALM
+# KRB_REALM="qpidd/EXAMPLE.COM"
